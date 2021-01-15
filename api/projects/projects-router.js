@@ -3,7 +3,11 @@
 const express = require("express");
 const router = express.Router();
 const Projects = require("./projects-model");
-const { validateProjectId, validateProject, validateUpdatedProject } = require("../middleware/");
+const {
+  validateProjectId,
+  validateProject,
+  validateUpdatedProject,
+} = require("../middleware/");
 
 // GET
 // GET
@@ -47,13 +51,30 @@ router.post("/", validateProject, (req, res) => {
 // PUT
 // PUT
 router.put("/:id", validateProjectId, validateUpdatedProject, (req, res) => {
-    Projects.update(req.params.id, req.body)
-      .then((project) => {
-        res.status(200).json(req.body);
-      })
-      .catch((error) => {
-        res.status(500).json({ error: "There was an error editing the project" });
-      });
-  });
+  Projects.update(req.params.id, req.body)
+    .then((project) => {
+      res.status(200).json(req.body);
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "There was an error editing the project" });
+    });
+});
+
+// DELETE
+// DELETE
+// DELETE
+router.delete("/:id", validateProjectId, (req, res) => {
+  Projects.remove(req.params.id)
+    .then(() => {
+      res
+        .status(200)
+        .json({ message: `Project with id ${req.params.id} has been deleted` });
+    })
+    .catch((error) => {
+      res
+        .status(500)
+        .json({ error: "There was an error deleting the project" });
+    });
+});
 
 module.exports = router;

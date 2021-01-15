@@ -35,4 +35,11 @@ function validateAction(req, res, next) {
     : res.status(400).json({ error: "Please fill out required fields" });
 }
 
-module.exports = { logger, validateActionId, validateAction };
+function validateUpdatedAction (req, res, next) {
+    console.log("Validating action fields")
+    const { completed, project_id, description, notes } = req.body
+    project_id || description || notes || completed ? next() : res.status(400).json({ error: "Please fill out required field(s)" })
+}
+
+
+module.exports = { logger, validateActionId, validateAction, validateUpdatedAction };

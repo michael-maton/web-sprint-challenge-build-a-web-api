@@ -3,29 +3,57 @@
 const express = require("express");
 const router = express.Router();
 const Projects = require("./projects-model");
-const { validateProjectId } = require("../middleware/");
+const { validateProjectId, validateProject, validateUpdatedProject } = require("../middleware/");
 
 // GET
 // GET
 // GET
 router.get("/", (req, res) => {
-    Projects.get()
+  Projects.get()
+    .then((project) => {
+      res.status(200).json(project);
+    })
+    .catch((error) => {
+      res
+        .status(500)
+        .json({ error: "There was an error retrieving the projects" });
+    });
+});
+
+router.get("/:id", validateProjectId, (req, res) => {
+  res.status(200).json(req.project);
+});
+
+router.get("/:id/actions", validateProjectId, (req, res) => {
+  res.status(200).json(req.project.actions);
+});
+
+// POST
+// POST
+// POST
+router.post("/", validateProject, (req, res) => {
+  Projects.insert(req.body)
+    .then((project) => {
+      res.status(201).json(req.body);
+    })
+    .catch((error) => {
+      res
+        .status(500)
+        .json({ error: "There was an error creating the project" });
+    });
+});
+
+// PUT
+// PUT
+// PUT
+router.put("/:id", validateProjectId, validateUpdatedProject, (req, res) => {
+    Projects.update(req.params.id, req.body)
       .then((project) => {
-        res.status(200).json(project);
+        res.status(200).json(req.body);
       })
       .catch((error) => {
-        res
-          .status(500)
-          .json({ error: "There was an error retrieving the projects" });
+        res.status(500).json({ error: "There was an error editing the project" });
       });
-  });
-  
-  router.get("/:id", validateProjectId, (req, res) => {
-    res.status(200).json(req.project);
-  });
-  
-  router.get("/:id/actions", validateProjectId, (req, res) => {
-    res.status(200).json(req.project.actions);
   });
 
 module.exports = router;

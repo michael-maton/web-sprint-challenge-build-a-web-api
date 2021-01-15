@@ -41,5 +41,22 @@ function validateUpdatedAction (req, res, next) {
     project_id || description || notes || completed ? next() : res.status(400).json({ error: "Please fill out required field(s)" })
 }
 
+async function validateProjectId (req, res, next) {
+    console.log('checking project id')
+    try {
+      const project = await Projects.get(req.params.id)
+      if (project) {
+        req.project = project
+        console.log(`Project id ${req.params.id} found`)
+        next()
+      } else {
+        console.log(`Projects with id ${req.params.id} not found`)
+        res.status(404).json(`Projects with id ${req.params.id} not found`)
+      }
+    } catch (error) {
+      res.status(500).json('error')
+    }
+}
 
-module.exports = { logger, validateActionId, validateAction, validateUpdatedAction };
+
+module.exports = { logger, validateActionId, validateAction, validateUpdatedAction, validateProjectId };
